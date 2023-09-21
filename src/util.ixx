@@ -31,39 +31,39 @@ struct vec {
 	constexpr T operator[](int i) const noexcept { return raw[i]; }
 #endif
 
-	friend constexpr vec operator+(vec a) noexcept { return a; }
-	friend constexpr vec operator-(vec a) noexcept { std::ranges::transform(a, a.begin(), std::negate{}); return a; }
+	friend constexpr vec operator+(vec v) noexcept { return v; }
+	friend constexpr vec operator-(vec v) noexcept { std::ranges::transform(v, v.begin(), std::negate{}); return v; }
 
-	friend constexpr vec& operator+=(vec& a, const vec& b) noexcept { for (auto&& [u, v] : std::views::zip(a, b)) u += v; return a; }
-	friend constexpr vec& operator-=(vec& a, const vec& b) noexcept { for (auto&& [u, v] : std::views::zip(a, b)) u -= v; return a; }
-	friend constexpr vec operator+(vec a, const vec& b) noexcept { return a += b; }
-	friend constexpr vec operator-(vec a, const vec& b) noexcept { return a -= b; }
+	friend constexpr vec& operator+=(vec& u, const vec& v) noexcept { for (auto&& [s, t] : std::views::zip(u, v)) s += t; return u; }
+	friend constexpr vec& operator-=(vec& u, const vec& v) noexcept { for (auto&& [s, t] : std::views::zip(u, v)) s -= t; return u; }
+	friend constexpr vec operator+(vec u, const vec& v) noexcept { return u += v; }
+	friend constexpr vec operator-(vec u, const vec& v) noexcept { return u -= v; }
 
-	friend constexpr vec& operator*=(vec& a, T b) noexcept { for (auto& v : a) v *= b; return a; }
-	friend constexpr vec& operator/=(vec& a, T b) noexcept { for (auto& v : a) v /= b; return a; }
-	friend constexpr vec operator*(vec a, T b) noexcept { return a *= b; }
-	friend constexpr vec operator/(vec a, T b) noexcept { return a /= b; }
+	friend constexpr vec& operator*=(vec& v, T s) noexcept { for (auto& t : v) t *= s; return v; }
+	friend constexpr vec& operator/=(vec& v, T s) noexcept { for (auto& t : v) t /= s; return v; }
+	friend constexpr vec operator*(vec v, T s) noexcept { return v *= s; }
+	friend constexpr vec operator/(vec v, T s) noexcept { return v /= s; }
 	
 
-	friend constexpr vec add(vec a, const vec& b) noexcept { for (auto&& [u, v] : std::views::zip(a, b)) u += v; return a; }
-	friend constexpr vec sub(vec a, const vec& b) noexcept { for (auto&& [u, v] : std::views::zip(a, b)) u -= v; return a; }
-	friend constexpr vec mul(vec a, const vec& b) noexcept { for (auto&& [u, v] : std::views::zip(a, b)) u *= v; return a; }
-	friend constexpr vec div(vec a, const vec& b) noexcept { for (auto&& [u, v] : std::views::zip(a, b)) u /= v; return a; }
+	friend constexpr vec add(vec u, const vec& v) noexcept { for (auto&& [s, t] : std::views::zip(u, v)) s += t; return u; }
+	friend constexpr vec sub(vec u, const vec& v) noexcept { for (auto&& [s, t] : std::views::zip(u, v)) s -= t; return u; }
+	friend constexpr vec mul(vec u, const vec& v) noexcept { for (auto&& [s, t] : std::views::zip(u, v)) s *= t; return u; }
+	friend constexpr vec div(vec u, const vec& v) noexcept { for (auto&& [s, t] : std::views::zip(u, v)) s /= t; return u; }
 
-	friend constexpr std::strong_ordering operator<=>(const vec& a, const vec& b) noexcept { return std::lexicographical_compare_three_way(a.begin(), a.end(), b.begin(), b.end()); }
+	friend constexpr std::strong_ordering operator<=>(const vec& u, const vec& v) noexcept { return std::lexicographical_compare_three_way(u.begin(), u.end(), v.begin(), v.end()); }
 
-	friend constexpr T dot(const vec& a, const vec& b) noexcept { return std::transform_reduce(a.begin(), a.end(), b.begin(), 0); }
-	friend constexpr T sum(const vec& a) noexcept { return std::accumulate(a.begin(), a.end(), 0); }
-	friend constexpr T prod(const vec& a) noexcept { return std::accumulate(a.begin(), a.end(), 1, std::multiplies{}); }
+	friend constexpr T dot(const vec& u, const vec& v) noexcept { return std::transform_reduce(u.begin(), u.end(), v.begin(), 0); }
+	friend constexpr T sum(const vec& v) noexcept { return std::accumulate(v.begin(), v.end(), 0); }
+	friend constexpr T prod(const vec& v) noexcept { return std::accumulate(v.begin(), v.end(), 1, std::multiplies{}); }
 
 	friend std::ostream& operator<<(std::ostream& os, const vec& v) { os << "( "; std::ranges::copy(v, std::ostream_iterator<T>(os, " ")); return os << ")"; }
 };
 
 export template <int N, typename T>
-constexpr vec<T, N> splat(T a) noexcept { vec<T, N> b; std::ranges::fill(b, a); return b; }
+constexpr vec<T, N> splat(T t) noexcept { vec<T, N> u; std::ranges::fill(u, t); return u; }
 
 export template <typename S, typename T, int N>
-constexpr vec<S, N> vec_cast(const vec<T, N>& a) noexcept { vec<S, N> b; std::ranges::transform(a, b.begin(), [](T t) { return static_cast<S>(t); }); return b; }
+constexpr vec<S, N> vec_cast(const vec<T, N>& v) noexcept { vec<S, N> u; std::ranges::transform(v, u.begin(), [](T t) { return static_cast<S>(t); }); return u; }
 
 export template <typename T, int N>
 constexpr T flatten(const vec<T, N>& pos, const vec<T, N>& dim) noexcept {
@@ -73,7 +73,6 @@ constexpr T flatten(const vec<T, N>& pos, const vec<T, N>& dim) noexcept {
 		out += pos[i] * uncompressed_dim;
 	}
 	return out;
-
 }
 
 export template <typename T, int N>
