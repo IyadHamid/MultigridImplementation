@@ -75,13 +75,13 @@ export {
 		constexpr auto triangularize(auto&& F) {
 			mat out = {};
 			for (int i = 0; i < N; ++i)
-				if (auto x = unflatten(i, dim(); F(x[0], x[1]));
+				if (auto x = unflatten(i, dim()); F(x[0], x[1]))
 					out[i] = (*this)[i];
 			return out;
 		}
 
 	public:
-		constexpr auto diagonal() { return triangularize(std::equal{}); }
+		constexpr auto diagonal() { return triangularize(std::equal_to{}); }
 
 		constexpr auto lower() { return triangularize(std::less_equal{}); }
 
