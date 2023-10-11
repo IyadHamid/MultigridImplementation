@@ -72,7 +72,6 @@ public:
 #endif
 #pragma endregion
 
-
 #pragma region MatrixViews
 #define assert(X) if (!(X)) std::terminate();  
 	constexpr auto nth_row(int n) const noexcept { assert(n < N);  return (*this) | std::views::drop(n * M) | std::views::take(M); }
@@ -85,7 +84,7 @@ public:
 #pragma region VectorSpace
 	// Inverse identity
 	friend constexpr mat operator+(mat v) noexcept { return v; }
-	friend constexpr mat operator-(mat v) noexcept { std::ranges::transform(v, v.begin(), std::negate{}); return v; } 
+	friend constexpr mat operator-(mat v) noexcept { std::ranges::transform(v, v.begin(), std::negate{}); return v; }
 
 	// Vector addition
 	friend constexpr mat& operator+=(mat& u, const mat& v) noexcept { for (auto&& [s, t] : std::views::zip(u, v)) s += t; return u; }
@@ -150,6 +149,14 @@ public:
 	constexpr auto upperStrict() requires (N == M) { return triangularize(std::greater{}); }
 
 #pragma endregion
-
 };
+
+#pragma region StdOverload
+export namespace std {
+	template <typename T, int N, int M>
+	constexpr auto lerp(const mat<T, N, M>& a, const mat<T, N, M>& b, const auto& t) {
+		return a + t * (b - a);
+	}
+}
+#pragma endregion
 

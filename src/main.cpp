@@ -67,23 +67,32 @@ void practice2() {
 }
 
 
-// values : f(min_x,min_y); f(min_x,max_y); f(max_x,min_y); f(max_x,max_y)
-export template <typename T>
-constexpr auto interp(const vec<T, 2>& min_point, const vec<T, 2>& max_point, std::span<T, 4> values, const vec<T, 2>& pos) {
-	auto range = max_point - min_point;
-	auto ratio = div(pos - min_point, range);
+// values : f(min_x,min_y); f(max_x,min_y); f(min_x,max_y); f(max_x,max_y)
+/************\
+|         Max|
+|   C    D   |
+|            |
+|            |
+|   A    B   |
+|Min         |
+\************/
+template <typename T, typename S>
+constexpr auto interp(const vec<T, 2>& min_point, const vec<T, 2>& max_point, std::span<S, 4> values, const vec<T, 2>& pos) {
+	auto ratio = div(pos - min_point, max_point - min_point);
 
-	vec<T, 2> x_mins = { values[0], values[1] };
-	vec<T, 2> x_maxs = { values[2], values[3] };
+	vec<T, 2> x_mins = { values[0], values[2] };
+	vec<T, 2> x_maxs = { values[1], values[3] };
 	
 	// (lerp at min_y, lerp at max_y)
 	auto x_interps = std::lerp(x_mins, x_maxs, ratio[0]);
 
-	return std::lerp(x_interps[0], x_interps[1]);
+	return std::lerp(x_interps[0], x_interps[1], ratio[1]);
 }
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
-	practice2();
+	//practice2();
+	std::vector values = { 0.0, 5.0, 2.0, 3.0 };
+	std::cout << interp({ 0.0, 0.2 }, { 0.9, 1.1 }, std::span<double, 4>{ values }, { 0.5, 0.5 }) << std::endl;
 	return 0;
 }
 
